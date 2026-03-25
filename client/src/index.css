@@ -226,11 +226,13 @@ textarea {
 
 .input-field {
   width: 100%;
+  min-height: 3rem;
   border-radius: 1rem;
   border: 1px solid rgba(80, 63, 40, 0.12);
   background: rgba(255, 255, 255, 0.88);
   color: #111827;
   padding: 0.9rem 1rem;
+  line-height: 1.35;
   outline: none;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
@@ -248,6 +250,57 @@ textarea {
 .input-field:disabled {
   opacity: 0.68;
   cursor: not-allowed;
+}
+
+select.input-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 0.95rem;
+  padding-right: 2.75rem;
+}
+
+select.input-field option {
+  background: #fffdf8;
+  color: #0f172a;
+}
+
+.field-shell {
+  position: relative;
+}
+
+.field-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+}
+
+.field-input {
+  padding-left: 2.9rem;
+}
+
+.field-input-with-action {
+  padding-right: 2.9rem;
+}
+
+.field-action {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: color 0.18s ease;
+}
+
+.field-action:hover {
+  color: #334155;
 }
 
 .badge {

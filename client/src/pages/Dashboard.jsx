@@ -27,6 +27,11 @@ import { expensesApi } from '../lib/api';
 import { formatCurrency, formatDate, getCategoryMeta } from '../lib/expenseMeta';
 
 const chartColors = ['#155e75', '#1e9b7e', '#c67833', '#7c3aed', '#ef4444', '#0ea5e9'];
+const uiImages = {
+  categories: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80',
+  trend: 'https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80',
+  activity: 'https://images.unsplash.com/photo-1554224154-22dec7ec8818?auto=format&fit=crop&w=1200&q=80'
+};
 
 const periodOptions = ['day', 'week', 'month', 'year'];
 
@@ -51,10 +56,12 @@ export default function Dashboard() {
   const [recentExpenses, setRecentExpenses] = useState([]);
   const [period, setPeriod] = useState('month');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      setLoadError('');
 
       try {
         const [statsData, expensesData] = await Promise.all([
@@ -66,6 +73,7 @@ export default function Dashboard() {
         setRecentExpenses(expensesData.expenses || []);
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
+        setLoadError(error.message || 'Failed to load dashboard data.');
       } finally {
         setLoading(false);
       }
@@ -126,11 +134,17 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {loadError ? (
+        <div className="rounded-[1.4rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {loadError}
+        </div>
+      ) : null}
+
       <section className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
         <Motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card overflow-hidden rounded-[2rem] p-6 sm:p-7"
+          className="card min-w-0 overflow-hidden rounded-[2rem] p-6 sm:p-7"
         >
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
@@ -147,7 +161,7 @@ export default function Dashboard() {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <div className="flex rounded-full border border-white/70 bg-white/80 p-1">
+              <div className="flex flex-wrap rounded-full border border-white/70 bg-white/80 p-1">
                 {periodOptions.map((option) => (
                   <button
                     key={option}
@@ -175,13 +189,13 @@ export default function Dashboard() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.06 }}
-                className="stat-tile p-5"
+                className="stat-tile min-w-0 p-5"
               >
                 <div className={`mb-5 flex h-12 w-12 items-center justify-center rounded-[1.2rem] ${card.accent}`}>
                   <card.icon size={20} />
                 </div>
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">{card.label}</p>
-                <p className="mt-2 font-['Sora'] text-3xl font-bold text-slate-900">{card.value}</p>
+                <p className="mt-2 break-words font-['Sora'] text-2xl font-bold text-slate-900 sm:text-3xl">{card.value}</p>
                 <p className="mt-2 text-sm leading-6 text-slate-500">{card.caption}</p>
               </Motion.div>
             ))}
@@ -192,7 +206,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="card rounded-[2rem] p-6 sm:p-7"
+          className="card min-w-0 overflow-hidden rounded-[2rem] p-6 sm:p-7"
         >
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Lead category</p>
           {topCategory ? (
@@ -207,14 +221,26 @@ export default function Dashboard() {
               <p className="mt-2 text-sm leading-7 text-slate-600">
                 This is where the biggest share of your money went during the selected period.
               </p>
+              <img
+                src={uiImages.categories}
+                alt="Budget planning notebook"
+                loading="lazy"
+                className="mt-5 h-28 w-full rounded-[1.2rem] border border-slate-200/70 object-cover"
+              />
               <div className="mt-6 rounded-[1.5rem] border border-slate-200/80 bg-white/70 p-5">
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Amount</p>
                 <p className="mt-2 font-['Sora'] text-3xl font-bold text-slate-900">{formatCurrency(topCategory.value)}</p>
               </div>
             </>
           ) : (
-            <div className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-white/50 p-8 text-center text-sm text-slate-500">
-              Add a few expenses and your category story will show up here.
+            <div className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-white/50 p-5 text-center text-sm text-slate-500">
+              <img
+                src={uiImages.categories}
+                alt="Organized receipts on desk"
+                loading="lazy"
+                className="mx-auto h-36 w-full max-w-sm rounded-[1.2rem] object-cover"
+              />
+              <p className="mt-4">Add a few expenses and your category story will show up here.</p>
             </div>
           )}
         </Motion.div>
@@ -225,7 +251,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="card rounded-[2rem] p-6 sm:p-7"
+          className="card min-w-0 overflow-hidden rounded-[2rem] p-6 sm:p-7"
         >
           <div className="mb-6 flex items-center justify-between gap-4">
             <div>
@@ -267,7 +293,13 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="flex h-[320px] items-center justify-center rounded-[1.6rem] border border-dashed border-slate-300 bg-white/45 text-sm text-slate-500">
+            <div className="flex h-[320px] flex-col items-center justify-center rounded-[1.6rem] border border-dashed border-slate-300 bg-white/45 px-5 text-center text-sm text-slate-500">
+              <img
+                src={uiImages.trend}
+                alt="Line graph on laptop screen"
+                loading="lazy"
+                className="mb-4 h-28 w-full max-w-xs rounded-[1rem] object-cover"
+              />
               No trend data yet for this period.
             </div>
           )}
@@ -277,7 +309,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.18 }}
-          className="card rounded-[2rem] p-6 sm:p-7"
+          className="card min-w-0 overflow-hidden rounded-[2rem] p-6 sm:p-7"
         >
           <div className="mb-6">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Category mix</p>
@@ -327,7 +359,13 @@ export default function Dashboard() {
               </div>
             </>
           ) : (
-            <div className="flex h-[320px] items-center justify-center rounded-[1.6rem] border border-dashed border-slate-300 bg-white/45 text-sm text-slate-500">
+            <div className="flex h-[320px] flex-col items-center justify-center rounded-[1.6rem] border border-dashed border-slate-300 bg-white/45 px-5 text-center text-sm text-slate-500">
+              <img
+                src={uiImages.categories}
+                alt="Paper chart and calculator"
+                loading="lazy"
+                className="mb-4 h-28 w-full max-w-xs rounded-[1rem] object-cover"
+              />
               No category data available yet.
             </div>
           )}
@@ -338,7 +376,7 @@ export default function Dashboard() {
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.22 }}
-        className="card rounded-[2rem] p-6 sm:p-7"
+        className="card min-w-0 overflow-hidden rounded-[2rem] p-6 sm:p-7"
       >
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -386,7 +424,13 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="rounded-[1.6rem] border border-dashed border-slate-300 bg-white/45 px-6 py-12 text-center">
-            <Receipt size={32} className="mx-auto text-slate-300" />
+            <img
+              src={uiImages.activity}
+              alt="Person reviewing expenses"
+              loading="lazy"
+              className="mx-auto h-32 w-full max-w-sm rounded-[1rem] object-cover"
+            />
+            <Receipt size={28} className="mx-auto mt-4 text-slate-300" />
             <p className="mt-4 text-base font-semibold text-slate-600">No expenses yet</p>
             <p className="mt-2 text-sm text-slate-500">Add your first receipt to bring this dashboard to life.</p>
           </div>

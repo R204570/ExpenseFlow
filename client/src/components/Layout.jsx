@@ -96,9 +96,9 @@ export default function Layout({ children }) {
         )}
       </AnimatePresence>
 
-      <div className="relative mx-auto flex min-h-screen max-w-[1600px]">
+      <div className="relative mx-auto flex min-h-screen max-w-[1600px] items-start">
         <aside
-          className={`fixed inset-y-0 left-0 z-50 w-[308px] border-r border-white/40 bg-[#f7f2e8]/95 px-5 py-5 backdrop-blur-2xl transition-transform duration-300 lg:static lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-50 w-[308px] border-r border-white/40 bg-[#f7f2e8]/95 px-5 py-5 backdrop-blur-2xl transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:overflow-y-auto ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >

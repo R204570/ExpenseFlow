@@ -12,6 +12,10 @@ import {
 import { expensesApi } from '../lib/api';
 import { EXPENSE_CATEGORIES, formatCurrency, formatDate, getCategoryMeta } from '../lib/expenseMeta';
 
+const uiImages = {
+  empty: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80'
+};
+
 export default function ExpenseHistory() {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +39,7 @@ export default function ExpenseHistory() {
         });
 
         setExpenses(response.expenses || []);
-        setPagination((current) => ({ ...current, total: response.total || 0 }));
+        setPagination((current) => ({ ...current, total: response.pagination?.total || 0 }));
       } catch (error) {
         console.error('Failed to load expenses:', error);
       } finally {
@@ -59,7 +63,7 @@ export default function ExpenseHistory() {
         <Motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card rounded-[2rem] p-6 sm:p-7"
+          className="card min-w-0 overflow-hidden rounded-[2rem] p-6 sm:p-7"
         >
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Expense archive</p>
           <h2 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">Searchable history, finally easy to scan.</h2>
@@ -91,7 +95,7 @@ export default function ExpenseHistory() {
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.08 }}
-        className="card rounded-[2rem] p-5 sm:p-6"
+        className="card min-w-0 overflow-hidden rounded-[2rem] p-5 sm:p-6"
       >
         <div className="grid gap-4 xl:grid-cols-[1.2fr_0.7fr_0.7fr]">
           <div>
@@ -170,7 +174,13 @@ export default function ExpenseHistory() {
           </div>
         ) : filteredExpenses.length === 0 ? (
           <div className="card rounded-[2rem] px-6 py-14 text-center">
-            <Receipt size={36} className="mx-auto text-slate-300" />
+            <img
+              src={uiImages.empty}
+              alt="Stack of receipts and pen on desk"
+              loading="lazy"
+              className="mx-auto h-36 w-full max-w-sm rounded-[1.1rem] object-cover"
+            />
+            <Receipt size={30} className="mx-auto mt-4 text-slate-300" />
             <p className="mt-4 text-lg font-bold text-slate-700">No expenses match this view.</p>
             <p className="mt-2 text-sm text-slate-500">Try a different search or clear the current filters.</p>
           </div>

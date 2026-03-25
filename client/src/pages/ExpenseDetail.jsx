@@ -17,6 +17,10 @@ import {
 import { expensesApi } from '../lib/api';
 import { EXPENSE_CATEGORIES, formatCurrency, formatDate, getCategoryMeta } from '../lib/expenseMeta';
 
+const uiImages = {
+  noReceipt: 'https://images.unsplash.com/photo-1554224154-26032fced8bd?auto=format&fit=crop&w=1200&q=80'
+};
+
 export default function ExpenseDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -430,7 +434,7 @@ export default function ExpenseDetail() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="card rounded-[2rem] p-6 sm:p-7"
+          className="card overflow-hidden rounded-[2rem] p-6 sm:p-7"
         >
           <div className="mb-4 flex items-center gap-2 text-slate-700">
             <ImageIcon size={17} />
@@ -449,8 +453,14 @@ export default function ExpenseDetail() {
               <p className="mt-3 text-sm text-slate-500">Tap the image to view it larger.</p>
             </>
           ) : (
-            <div className="rounded-[1.6rem] border border-dashed border-slate-300 bg-white/45 px-5 py-14 text-center text-sm text-slate-500">
-              This expense was saved without a receipt image.
+            <div className="rounded-[1.6rem] border border-dashed border-slate-300 bg-white/45 px-5 py-7 text-center text-sm text-slate-500">
+              <img
+                src={uiImages.noReceipt}
+                alt="Receipt and calculator on table"
+                loading="lazy"
+                className="mx-auto h-40 w-full rounded-[1.1rem] object-cover"
+              />
+              <p className="mt-4">This expense was saved without a receipt image.</p>
             </div>
           )}
         </Motion.div>

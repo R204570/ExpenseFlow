@@ -90,6 +90,19 @@ export default function AuthPage() {
             ))}
           </div>
 
+          <div className="relative z-10 mt-6 overflow-hidden rounded-[1.5rem] border border-white/15">
+            <img
+              src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80"
+              alt="Workspace with notebook and spending notes"
+              className="h-48 w-full object-cover"
+              loading="lazy"
+            />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/85 via-slate-900/45 to-transparent px-4 py-3">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-200">Stay in control</p>
+              <p className="mt-1 text-sm text-slate-100">See every transaction clearly and avoid end-of-month surprises.</p>
+            </div>
+          </div>
+
           <div className="relative z-10 mt-auto grid gap-4 sm:grid-cols-2">
             <div className="rounded-[1.4rem] border border-white/10 bg-white/8 p-5">
               <p className="text-xs uppercase tracking-[0.22em] text-white/45">Capture flow</p>
@@ -156,14 +169,14 @@ export default function AuthPage() {
                     className="overflow-hidden"
                   >
                     <label className="mb-2 block text-sm font-bold text-slate-700">Full name</label>
-                    <div className="relative">
-                      <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <div className="field-shell">
+                      <User size={18} className="field-icon" />
                       <input
                         type="text"
                         value={name}
                         onChange={(event) => setName(event.target.value)}
                         placeholder="Your name"
-                        className="input-field pl-11"
+                        className="input-field field-input"
                       />
                     </div>
                   </Motion.div>
@@ -172,23 +185,23 @@ export default function AuthPage() {
 
               <div>
                 <label className="mb-2 block text-sm font-bold text-slate-700">Email address</label>
-                <div className="relative">
-                  <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <div className="field-shell">
+                  <Mail size={18} className="field-icon" />
                   <input
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     placeholder="you@example.com"
                     required
-                    className="input-field pl-11"
+                    className="input-field field-input"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-bold text-slate-700">Password</label>
-                <div className="relative">
-                  <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <div className="field-shell">
+                  <Lock size={18} className="field-icon" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
@@ -196,12 +209,12 @@ export default function AuthPage() {
                     placeholder="Enter at least 6 characters"
                     required
                     minLength={6}
-                    className="input-field pl-11 pr-11"
+                    className="input-field field-input field-input-with-action"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((current) => !current)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                    className="field-action"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>

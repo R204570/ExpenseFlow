@@ -26,6 +26,10 @@ import {
 import { aiApi, expensesApi, splitsApi, uploadApi } from '../lib/api';
 import { EXPENSE_CATEGORIES, formatCurrency, getCategoryMeta } from '../lib/expenseMeta';
 
+const uiImages = {
+  noReceipt: 'https://images.unsplash.com/photo-1593672715438-d88a70629abe?auto=format&fit=crop&w=1200&q=80'
+};
+
 const stages = [
   { id: 'upload', label: 'Capture' },
   { id: 'processing', label: 'Process' },
@@ -696,7 +700,7 @@ export default function AddExpense() {
               <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                 <div className="rounded-[1.4rem] border border-white/70 bg-white/70 p-4">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Amount</p>
-                  <p className="mt-2 font-['Sora'] text-3xl font-bold text-slate-900">
+                  <p className="mt-2 break-words font-['Sora'] text-2xl font-bold text-slate-900 sm:text-3xl">
                     {formData.amount ? formatCurrency(formData.amount) : '$0.00'}
                   </p>
                 </div>
@@ -734,8 +738,14 @@ export default function AddExpense() {
                   className="max-h-72 w-full rounded-[1.5rem] border border-slate-200/80 bg-white object-contain"
                 />
               ) : (
-                <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-white/45 px-5 py-12 text-center text-sm text-slate-500">
-                  No image attached. You can still save a clean manual expense entry.
+                <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-white/45 px-5 py-6 text-center text-sm text-slate-500">
+                  <img
+                    src={uiImages.noReceipt}
+                    alt="Desk setup for managing receipts"
+                    loading="lazy"
+                    className="mx-auto h-36 w-full rounded-[1.1rem] object-cover"
+                  />
+                  <p className="mt-4">No image attached. You can still save a clean manual expense entry.</p>
                 </div>
               )}
 

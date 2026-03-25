@@ -12,6 +12,23 @@ function parseOptionalAmount(value) {
   return Number.isNaN(parsed) ? null : parsed;
 }
 
+function getPeriodStartDate(period) {
+  const now = new Date();
+
+  switch (period) {
+    case 'day':
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    case 'week':
+      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    case 'month':
+      return new Date(now.getFullYear(), now.getMonth(), 1);
+    case 'year':
+      return new Date(now.getFullYear(), 0, 1);
+    default:
+      return new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+}
+
 // POST /api/expenses – Create expense with optional items
 router.post('/', authenticate, async (req, res) => {
   try {
@@ -99,33 +116,28 @@ router.get('/', authenticate, async (req, res) => {
 router.get('/stats', authenticate, async (req, res) => {
   try {
     const { period = 'month' } = req.query;
-    const now = new Date();
-    let startDate;
+    const startDate = getPeriodStartDate(period);
 
-    switch (period) {
-      case 'day':
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        break;
-      case 'week':
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case 'month':
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        break;
-      case 'year':
-        startDate = new Date(now.getFullYear(), 0, 1);
-        break;
-      default:
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    }
-
-    const expenses = await prisma.expense.findMany({
+    let expenses = await prisma.expense.findMany({
       where: {
         userId: req.user.id,
         date: { gte: startDate }
       },
       orderBy: { date: 'asc' }
     });
+    let statsBasis = 'expense_date';
+
+    // Fallback for cases where receipts have old bill dates but were added recently.
+    if (expenses.length === 0) {
+      expenses = await prisma.expense.findMany({
+        where: {
+          userId: req.user.id,
+          createdAt: { gte: startDate }
+        },
+        orderBy: { createdAt: 'asc' }
+      });
+      statsBasis = 'created_at';
+    }
 
     const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
     const avgAmount = expenses.length > 0 ? totalAmount / expenses.length : 0;
@@ -144,7 +156,8 @@ router.get('/stats', authenticate, async (req, res) => {
     // Daily spending trend
     const dailyMap = {};
     expenses.forEach(e => {
-      const day = e.date.toISOString().split('T')[0];
+      const referenceDate = statsBasis === 'created_at' ? e.createdAt : e.date;
+      const day = referenceDate.toISOString().split('T')[0];
       if (!dailyMap[day]) dailyMap[day] = 0;
       dailyMap[day] += e.amount;
     });
@@ -156,7 +169,8 @@ router.get('/stats', authenticate, async (req, res) => {
     // Monthly spending trend
     const monthlyMap = {};
     expenses.forEach(e => {
-      const month = `${e.date.getFullYear()}-${String(e.date.getMonth() + 1).padStart(2, '0')}`;
+      const referenceDate = statsBasis === 'created_at' ? e.createdAt : e.date;
+      const month = `${referenceDate.getFullYear()}-${String(referenceDate.getMonth() + 1).padStart(2, '0')}`;
       if (!monthlyMap[month]) monthlyMap[month] = 0;
       monthlyMap[month] += e.amount;
     });
@@ -172,7 +186,8 @@ router.get('/stats', authenticate, async (req, res) => {
       categoryBreakdown,
       dailyTrend,
       monthlyTrend,
-      period
+      period,
+      basis: statsBasis
     });
   } catch (error) {
     console.error('Stats error:', error);
