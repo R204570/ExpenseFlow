@@ -51,6 +51,8 @@ export default function AddExpense() {
     date: new Date().toISOString().split('T')[0],
     merchant: '',
     amount: '',
+    tax: '',
+    discount: '',
     category: 'Other',
     notes: '',
     items: [],
@@ -115,6 +117,8 @@ export default function AddExpense() {
           date: aiResult.date || current.date,
           merchant: aiResult.merchant || '',
           amount: aiResult.amount !== null ? String(aiResult.amount) : '',
+          tax: aiResult.tax !== null ? String(aiResult.tax) : '',
+          discount: aiResult.discount !== null ? String(aiResult.discount) : '',
           category: aiResult.category || 'Other',
           items: aiResult.items?.length
             ? aiResult.items.map((item) => ({ name: item.name, price: String(item.price) }))
@@ -211,16 +215,14 @@ export default function AddExpense() {
       let imageUrl = null;
 
       if (imageFile) {
-        try {
-          const uploadResult = await uploadApi.uploadReceipt(imageFile);
-          imageUrl = uploadResult.url;
-        } catch (uploadError) {
-          console.warn('Image upload failed, saving without image:', uploadError);
-        }
+        const uploadResult = await uploadApi.uploadReceipt(imageFile);
+        imageUrl = uploadResult.url;
       }
 
       const expense = await expensesApi.create({
         amount: Number.parseFloat(formData.amount),
+        tax: formData.tax ? Number.parseFloat(formData.tax) : null,
+        discount: formData.discount ? Number.parseFloat(formData.discount) : null,
         date: formData.date,
         merchant: formData.merchant,
         category: formData.category,
@@ -479,6 +481,36 @@ export default function AddExpense() {
 
                 <div>
                   <label className="mb-2 flex items-center gap-2 text-sm font-bold text-slate-700">
+                    <DollarSign size={16} />
+                    Tax
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.tax}
+                    onChange={(event) => updateFormField('tax', event.target.value)}
+                    placeholder="0.00"
+                    className="input-field"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-sm font-bold text-slate-700">
+                    <DollarSign size={16} />
+                    Discount
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.discount}
+                    onChange={(event) => updateFormField('discount', event.target.value)}
+                    placeholder="0.00"
+                    className="input-field"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 flex items-center gap-2 text-sm font-bold text-slate-700">
                     <Calendar size={16} />
                     Date
                   </label>
@@ -671,6 +703,14 @@ export default function AddExpense() {
                 <div className="rounded-[1.4rem] border border-white/70 bg-white/70 p-4">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Line items total</p>
                   <p className="mt-2 font-['Sora'] text-3xl font-bold text-slate-900">{formatCurrency(lineItemsTotal)}</p>
+                </div>
+                <div className="rounded-[1.4rem] border border-white/70 bg-white/70 p-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Tax</p>
+                  <p className="mt-2 font-['Sora'] text-3xl font-bold text-slate-900">{formatCurrency(formData.tax || 0)}</p>
+                </div>
+                <div className="rounded-[1.4rem] border border-white/70 bg-white/70 p-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Discount</p>
+                  <p className="mt-2 font-['Sora'] text-3xl font-bold text-slate-900">{formatCurrency(formData.discount || 0)}</p>
                 </div>
                 {showSplit ? (
                   <div className="rounded-[1.4rem] border border-white/70 bg-white/70 p-4">

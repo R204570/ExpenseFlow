@@ -1,5 +1,12 @@
 node_modules
 .env
+client/.env
+server/.env
 dist
 .DS_Store
 *.log
+.vercel
+client/dist
+client/node_modules
+server/node_modules
+server/uploads

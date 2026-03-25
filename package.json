@@ -1,5 +1,22 @@
 {
+  "name": "expenseflow",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "predev": "kill-port 5000 5173",
+    "dev": "concurrently -n server,client -c green,cyan \"npm run dev --workspace server\" \"npm run dev --workspace client\"",
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client",
+    "build": "npm run build --workspace client",
+    "postinstall": "npm run db:generate --workspace server"
+  },
   "devDependencies": {
+    "concurrently": "^9.2.1",
+    "kill-port": "^2.0.1",
     "supabase": "^2.83.0"
   }
 }

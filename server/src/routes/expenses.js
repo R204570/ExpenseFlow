@@ -4,10 +4,18 @@ import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
 
+function parseOptionalAmount(value) {
+  if (value === undefined) return undefined;
+  if (value === null || value === '') return null;
+
+  const parsed = Number.parseFloat(value);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
 // POST /api/expenses – Create expense with optional items
 router.post('/', authenticate, async (req, res) => {
   try {
-    const { amount, date, merchant, category, notes, imageUrl, items } = req.body;
+    const { amount, tax, discount, date, merchant, category, notes, imageUrl, items } = req.body;
 
     if (!amount || !date || !merchant || !category) {
       return res.status(400).json({ error: 'Amount, date, merchant, and category are required' });
@@ -18,6 +26,8 @@ router.post('/', authenticate, async (req, res) => {
         data: {
           userId: req.user.id,
           amount: parseFloat(amount),
+          tax: parseOptionalAmount(tax),
+          discount: parseOptionalAmount(discount),
           date: new Date(date),
           merchant: merchant.trim(),
           category: category.trim(),
@@ -192,7 +202,7 @@ router.get('/:id', authenticate, async (req, res) => {
 // PUT /api/expenses/:id – Update expense
 router.put('/:id', authenticate, async (req, res) => {
   try {
-    const { amount, date, merchant, category, notes, imageUrl, items } = req.body;
+    const { amount, tax, discount, date, merchant, category, notes, imageUrl, items } = req.body;
 
     const existing = await prisma.expense.findFirst({
       where: { id: req.params.id, userId: req.user.id }
@@ -214,6 +224,8 @@ router.put('/:id', authenticate, async (req, res) => {
         where: { id: req.params.id },
         data: {
           amount: amount ? parseFloat(amount) : undefined,
+          tax: parseOptionalAmount(tax),
+          discount: parseOptionalAmount(discount),
           date: date ? new Date(date) : undefined,
           merchant: merchant?.trim(),
           category: category?.trim(),

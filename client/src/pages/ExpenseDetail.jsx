@@ -28,6 +28,8 @@ export default function ExpenseDetail() {
   const [editData, setEditData] = useState({
     merchant: '',
     amount: '',
+    tax: '',
+    discount: '',
     date: '',
     category: 'Other',
     notes: '',
@@ -43,6 +45,8 @@ export default function ExpenseDetail() {
         setEditData({
           merchant: data.merchant,
           amount: String(data.amount),
+          tax: data.tax !== null && data.tax !== undefined ? String(data.tax) : '',
+          discount: data.discount !== null && data.discount !== undefined ? String(data.discount) : '',
           date: new Date(data.date).toISOString().split('T')[0],
           category: data.category,
           notes: data.notes || '',
@@ -64,6 +68,8 @@ export default function ExpenseDetail() {
       const updatedExpense = await expensesApi.update(id, {
         merchant: editData.merchant,
         amount: Number.parseFloat(editData.amount),
+        tax: editData.tax ? Number.parseFloat(editData.tax) : null,
+        discount: editData.discount ? Number.parseFloat(editData.discount) : null,
         date: editData.date,
         category: editData.category,
         notes: editData.notes || null,
@@ -222,6 +228,38 @@ export default function ExpenseDetail() {
                   </div>
                 )}
               </div>
+
+              <div className="rounded-[1.5rem] border border-white/70 bg-white/70 p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Tax</p>
+                {editing ? (
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editData.tax}
+                    onChange={(event) => setEditData((current) => ({ ...current, tax: event.target.value }))}
+                    className="input-field mt-3"
+                    placeholder="0.00"
+                  />
+                ) : (
+                  <p className="mt-3 text-sm font-semibold text-slate-700">{formatCurrency(expense.tax || 0)}</p>
+                )}
+              </div>
+
+              <div className="rounded-[1.5rem] border border-white/70 bg-white/70 p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Discount</p>
+                {editing ? (
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editData.discount}
+                    onChange={(event) => setEditData((current) => ({ ...current, discount: event.target.value }))}
+                    className="input-field mt-3"
+                    placeholder="0.00"
+                  />
+                ) : (
+                  <p className="mt-3 text-sm font-semibold text-slate-700">{formatCurrency(expense.discount || 0)}</p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -238,6 +276,18 @@ export default function ExpenseDetail() {
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-sm font-semibold text-slate-600">Line items total</span>
                   <span className="text-sm font-bold text-slate-900">{formatCurrency(lineItemsTotal)}</span>
+                </div>
+              </div>
+              <div className="rounded-[1.3rem] border border-slate-200/80 bg-white/70 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold text-slate-600">Tax</span>
+                  <span className="text-sm font-bold text-slate-900">{formatCurrency(expense.tax || 0)}</span>
+                </div>
+              </div>
+              <div className="rounded-[1.3rem] border border-slate-200/80 bg-white/70 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold text-slate-600">Discount</span>
+                  <span className="text-sm font-bold text-slate-900">{formatCurrency(expense.discount || 0)}</span>
                 </div>
               </div>
               <div className="rounded-[1.3rem] border border-slate-200/80 bg-white/70 p-4">
@@ -342,6 +392,8 @@ export default function ExpenseDetail() {
                   setEditData({
                     merchant: expense.merchant,
                     amount: String(expense.amount),
+                    tax: expense.tax !== null && expense.tax !== undefined ? String(expense.tax) : '',
+                    discount: expense.discount !== null && expense.discount !== undefined ? String(expense.discount) : '',
                     date: new Date(expense.date).toISOString().split('T')[0],
                     category: expense.category,
                     notes: expense.notes || '',

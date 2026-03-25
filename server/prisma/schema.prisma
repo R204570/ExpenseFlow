@@ -23,6 +23,8 @@ model Expense {
   id        String         @id @default(uuid())
   userId    String         @map("user_id")
   amount    Float
+  tax       Float?         @map("tax_amount")
+  discount  Float?         @map("discount_amount")
   date      DateTime
   merchant  String
   category  String
