@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  expenses  Expense[]
+
+  @@map("users")
+}
+
+model Expense {
+  id        String         @id @default(uuid())
+  userId    String         @map("user_id")
+  amount    Float
+  date      DateTime
+  merchant  String
+  category  String
+  notes     String?
+  imageUrl  String?        @map("image_url")
+  createdAt DateTime       @default(now()) @map("created_at")
+  
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     ExpenseItem[]
+  split     Split?
+
+  @@map("expenses")
+}
+
+model ExpenseItem {
+  id        String  @id @default(uuid())
+  expenseId String  @map("expense_id")
+  name      String
+  price     Float
+
+  expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+
+  @@map("expense_items")
+}
+
+model Split {
+  id           String             @id @default(uuid())
+  expenseId    String             @unique @map("expense_id")
+  totalPeople  Int                @map("total_people")
+  createdAt    DateTime           @default(now()) @map("created_at")
+
+  expense      Expense            @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  participants SplitParticipant[]
+
+  @@map("splits")
+}
+
+model SplitParticipant {
+  id      String @id @default(uuid())
+  splitId String @map("split_id")
+  name    String
+  amount  Float
+
+  split   Split  @relation(fields: [splitId], references: [id], onDelete: Cascade)
+
+  @@map("split_participants")
+}
