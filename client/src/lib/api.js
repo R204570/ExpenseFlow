@@ -9,10 +9,26 @@ async function getAuthHeaders() {
 }
 
 async function handleResponse(res) {
-  const data = await res.json();
+  const contentType = res.headers.get('content-type') || '';
+  const isJson = contentType.includes('application/json');
+  const data = isJson ? await res.json() : await res.text();
+
   if (!res.ok) {
-    throw new Error(data.error || `Request failed with status ${res.status}`);
+    if (isJson) {
+      throw new Error(data.error || `Request failed with status ${res.status}`);
+    }
+
+    throw new Error(
+      typeof data === 'string' && data.trim()
+        ? data.slice(0, 160)
+        : `Request failed with status ${res.status}`
+    );
   }
+
+  if (!isJson) {
+    throw new Error(`Expected JSON response but received ${contentType || 'non-JSON content'}`);
+  }
+
   return data;
 }
 
