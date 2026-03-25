@@ -122,12 +122,15 @@ textarea {
 }
 
 .card {
-  background: var(--app-panel);
   backdrop-filter: blur(18px);
   border: 1px solid var(--app-stroke);
   border-radius: 1.5rem;
   box-shadow: var(--app-shadow-soft);
   transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.card:not([class*="bg-"]) {
+  background: var(--app-panel);
 }
 
 .card:hover {

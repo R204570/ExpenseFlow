@@ -237,18 +237,19 @@ export default function AuthPage() {
               </button>
             </form>
 
-            <div className="mt-6 rounded-[1.4rem] border border-slate-200/80 bg-white/55 px-4 py-4 text-sm text-slate-600">
-              {isLogin ? "New to ExpenseFlow?" : 'Already have an account?'}
-              {' '}
+            <div className="mt-6 rounded-[1.4rem] border border-slate-200/80 bg-white/55 px-4 py-4">
+              <p className="mb-3 text-sm text-slate-600">
+                {isLogin ? 'New to ExpenseFlow?' : 'Already have an account?'}
+              </p>
               <button
                 type="button"
                 onClick={() => {
                   setIsLogin((current) => !current);
                   setError('');
                 }}
-                className="font-bold text-primary-700 hover:text-primary-800"
+                className="btn-secondary w-full px-5 py-3 text-sm"
               >
-                {isLogin ? 'Create one here.' : 'Sign in instead.'}
+                {isLogin ? 'Create one' : 'Sign in instead'}
               </button>
             </div>
           </div>
